@@ -10,7 +10,7 @@ static volatile struct limine_module_request module_request = {
 	.revision = 0
 };
 
-static uintptr_t data;
+static void* data;
 
 static uint32_t tar_parse_size(const char *size) {
 	uint32_t val = 0;
@@ -146,7 +146,7 @@ int initrd_tarfs(void) {
 		void *addr = module->address;
 	
 		if (memcmp(addr + 257, "ustar", 5) == 0) {
-			data = (uintptr_t)addr;
+			data = addr;
 			break;	
 		}
 	}

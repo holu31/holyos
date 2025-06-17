@@ -1,7 +1,6 @@
 #include <kernel/vfs.h>
 #include <kernel/string.h>
 #include <kernel/printf.h>
-#include <kernel/mm.h>
 
 static struct vfs_mount_info mounts[32];
 static int mount_count = 0;
@@ -42,15 +41,11 @@ int vfs_mount(char* path, struct vfs_filesystem_ops ops, fs_type_t type) {
 		if (strcmp(mounts[i].path, path) == 0) return -1;
 	}
 
-	if (mount_count >= 32) return -1;
-
 	mounts[mount_count].path = path;
 	mounts[mount_count].ops = ops;
 	mounts[mount_count].type = type;
 
 	mount_count++;
-
-	return 0;
 }
 
 void vfs_adjust_path(char* adjusted, const char* original) {
@@ -67,12 +62,10 @@ int vfs_read(char* path, void* buf, size_t count) {
 	if (!mount) return -1;
 
 	char* rel_path = vfs_find_filepath(path);
-	int ret = -1;
 	if (mount->ops.read) {
-		ret = mount->ops.read(rel_path, buf, count);
+		return mount->ops.read(rel_path, buf, count);
 	}
-	kfree(rel_path);
-	return ret;
+	return -1;
 }
 
 int vfs_write(char* path, void* buf, size_t count) {
@@ -80,12 +73,10 @@ int vfs_write(char* path, void* buf, size_t count) {
 	if (!mount) return -1;
 
 	char* rel_path = vfs_find_filepath(path);
-	int ret = -1;
 	if (mount->ops.write) {
-		ret = mount->ops.write(rel_path, buf, count);
+		return mount->ops.write(rel_path, buf, count);
 	}
-	kfree(rel_path);
-	return ret;
+	return -1;
 }
 
 int vfs_size(char* path) {
@@ -93,12 +84,10 @@ int vfs_size(char* path) {
 	if (!mount) return -1;
 
 	char* rel_path = vfs_find_filepath(path);
-	int ret = -1;
 	if (mount->ops.size) {
-		ret = mount->ops.size(rel_path);
+		return mount->ops.size(rel_path);
 	}
-	kfree(rel_path);
-	return ret;
+	return -1;
 }
 
 int vfs_list(const char* path) {
@@ -112,12 +101,10 @@ int vfs_list(const char* path) {
 	if (!mount) return -1;
 
 	char* rel_path = vfs_find_filepath(path);
-	int ret = -1;
 	if (mount->ops.list) {
-		ret = mount->ops.list(rel_path);
+		return mount->ops.list(rel_path);
 	}
-	kfree(rel_path);
-	return ret;
+	return -1;
 }
 
 int vfs_isdir(const char* path) {
@@ -125,12 +112,10 @@ int vfs_isdir(const char* path) {
 	if (!mount) return -1;
 
 	char* rel_path = vfs_find_filepath(path);
-	int ret = -1;
 	if (mount->ops.isdir) {
-		ret = mount->ops.isdir(rel_path);
+		return mount->ops.isdir(rel_path);
 	}
-	kfree(rel_path);
-	return ret;
+	return -1;
 }
 
 int vfs_exists(const char* path) {
@@ -138,10 +123,8 @@ int vfs_exists(const char* path) {
 	if (!mount) return -1;
 
 	char* rel_path = vfs_find_filepath(path);
-	int ret = -1;
 	if (mount->ops.exists) {
-		ret = mount->ops.exists(rel_path);
+		return mount->ops.exists(rel_path);
 	}
-	kfree(rel_path);
-	return ret;
+	return -1;
 }

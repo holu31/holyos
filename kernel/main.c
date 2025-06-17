@@ -21,8 +21,6 @@ void main(void) {
 	pic_remap();
 	fb_init();
 	mem_init();
-	// WARNING: THIS FUNCTION CRASHES
-	// WHEN OS IS COMPILED WITH CLANG
 	initrd_tarfs();
 
 	i8042_init();
@@ -33,8 +31,6 @@ void main(void) {
 	printf("\n\"IN THE BEGINNING WAS THE WORD, AND THE WORD WAS WITH GOD, AND THE WORD WAS GOD\"\n");
 	printf("- JOHN 1:1\n\n");
 
-	// WARNING: THIS FUNCTION CRASHES
-	// WHEN OS IS COMPILED WITH CLANG
 	pci_print_list();
 
 	size_t free_mem = get_free_memory();
