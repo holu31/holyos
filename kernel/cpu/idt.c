@@ -10,7 +10,7 @@ static struct idt_ptr idtr;
 static irq_handler_t handlers[256];
 extern void* interrupt_stub_table[];
 
-static inline void load_idt(uint64_t ptr) {
+static inline void load_idt() {
 	asm volatile("lidt %0" :: "m"(idtr));
 }
 
@@ -61,10 +61,10 @@ void page_fault_handler(struct trap_frame* regs) {
 	printf("Page Fault at 0x%x\n", fault_address);
 	printf("Error code: 0x%x\n", regs->orig_ax);
 	printf("Details: %s %s %s %s\n",
-           present ? "present" : "not-present",
-           write ? "write" : "read",
-           user ? "user" : "supervisor",
-           instruction ? "instruction" : "data");
+        	present ? "present" : "not-present",
+        	write ? "write" : "read",
+        	user ? "user" : "supervisor",
+		instruction ? "instruction" : "data");
 
 	asm volatile("hlt");
 }
@@ -86,5 +86,5 @@ void idt_init() {
 
 	idt_set_entry(14, page_fault_handler, 0x8E);
 
-	load_idt((uint64_t)&idtr);
+	load_idt();
 }
