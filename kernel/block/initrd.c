@@ -153,7 +153,8 @@ int initrd_tarfs(void) {
 
 	if (!data) return -1;
 
-	vfs_mount("/initrd/", initrd, FS_TYPE_TARFS);
+	char path[32] = "/initrd/";
+	vfs_mount(path, initrd, FS_TYPE_TARFS);
 
 	return 0;
 }

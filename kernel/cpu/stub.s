@@ -3,42 +3,43 @@
 .extern interrupt_handler
 
 interrupt_common_stub:
-	push %r15
-	push %r14
-	push %r13
-	push %r12
-	push %rbp
-	push %rbx
-	push %r11
-	push %r10
-	push %r9
-	push %r8
-	push %rax
-	push %rcx
-	push %rdx
-	push %rsi
-	push %rdi	
-	
-	mov %rsp, %rdi
+	.align 16
+	subq $120, %rsp
+	movq %r15, 0(%rsp)
+    	movq %r14, 8(%rsp)
+	movq %r13, 16(%rsp)
+	movq %r12, 24(%rsp)
+	movq %rbp, 32(%rsp)
+	movq %rbx, 40(%rsp)
+	movq %r11, 48(%rsp)
+	movq %r10, 56(%rsp)
+	movq %r9, 64(%rsp)
+	movq %r8, 72(%rsp)
+	movq %rax, 80(%rsp)
+	movq %rcx, 88(%rsp)
+	movq %rdx, 96(%rsp)
+	movq %rsi, 104(%rsp)
+	movq %rdi, 112(%rsp)
+	cld
+	movq %rsp, %rdi
 	call interrupt_handler
-	
-	pop %rdi
-	pop %rsi
-	pop %rdx
-	pop %rcx
-	pop %rax
-	pop %r8
-	pop %r9
-	pop %r10
-	pop %r11
-	pop %rbx
-	pop %rbp
-	pop %r12
-	pop %r13
-	pop %r14
-	pop %r15
-	
-	add $16, %rsp
+
+	movq 0(%rsp), %r15
+	movq 8(%rsp), %r14
+	movq 16(%rsp), %r13
+	movq 24(%rsp), %r12
+	movq 32(%rsp), %rbp
+	movq 40(%rsp), %rbx
+	movq 48(%rsp), %r11
+	movq 56(%rsp), %r10
+	movq 64(%rsp), %r9
+	movq 72(%rsp), %r8
+	movq 80(%rsp), %rax
+	movq 88(%rsp), %rcx
+	movq 96(%rsp), %rdx
+	movq 104(%rsp), %rsi
+	movq 112(%rsp), %rdi
+	addq $136, %rsp
 	iretq
 
 .macro int_noerr num

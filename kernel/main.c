@@ -12,6 +12,7 @@
 #include <kernel/i8042.h>
 #include <kernel/ps2kbd.h>
 #include <kernel/input.h>
+#include <kernel/syscall.h>
 #include <kernel/cli.h>
 
 void main(void) {
@@ -24,6 +25,7 @@ void main(void) {
 	// WARNING: THIS FUNCTION CRASHES
 	// WHEN OS IS COMPILED WITH CLANG
 	initrd_tarfs();
+	syscall_init();
 
 	i8042_init();
 	ps2kbd_init();
@@ -35,13 +37,19 @@ void main(void) {
 
 	// WARNING: THIS FUNCTION CRASHES
 	// WHEN OS IS COMPILED WITH CLANG
-	pci_print_list();
+	//pci_print_list();
 
 	size_t free_mem = get_free_memory();
 	int kb = free_mem / 1024;
 	printf("FREE MEMORY: %d KB\n\n", kb);
 
 	asm volatile("sti");
+
+	// TEST SYSCALL
+	asm volatile ("int $0x80" :
+		: "a" (0), "b" ("Hello\n")
+		: "memory"
+	);
 
 	for (int y = 0; y < jesus_medal_height; y++) {
 		for (int x = 0; x < jesus_medal_width; x++) {
