@@ -28,7 +28,6 @@ struct tar_header* initrd_find(const char* filename) {
 
 	struct tar_header* header = (struct tar_header*)data;
 	while (header->filename[0] != '\0') {
-		// TEMP
 		char path[256];
 	       	strcpy(path, adjusted_path);
 		if (header->typeflag[0] != INITRD_DIRECTORY) {
@@ -153,8 +152,7 @@ int initrd_tarfs(void) {
 
 	if (!data) return -1;
 
-	char path[32] = "/initrd/";
-	vfs_mount(path, initrd, FS_TYPE_TARFS);
+	vfs_mount("/initrd/", initrd, FS_TYPE_TARFS);
 
 	return 0;
 }
