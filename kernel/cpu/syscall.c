@@ -6,7 +6,7 @@ syscall_t* calls[SYSCALL_NUM];
 
 int syscall_write(struct trap_frame* r) {
 	if (r->di) {
-		printf("write from syscall: %s", (char*)r->bx);
+		printf("%s", (char*)r->bx);
 		return 0;
 	}
 	return -1;

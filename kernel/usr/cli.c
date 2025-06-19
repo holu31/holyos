@@ -4,6 +4,7 @@
 #include <kernel/printf.h>
 #include <kernel/vfs.h>
 #include <kernel/pci.h>
+#include <kernel/elf.h>
 
 #define MAX_PATH_LEN	128
 #define MAX_COMMAND_LEN	128
@@ -154,6 +155,28 @@ static void cmd_pci(int argc, char* argv[]) {
 	pci_print_list();
 }
 
+static void cli_try_elf(int argc, char* argv[]) {
+	char *target = argv[0];
+	char path[MAX_PATH_LEN];
+
+	if (target[0] == '/') {
+        	strncpy(path, target, MAX_PATH_LEN - 1);
+	} else {
+		strncpy(path, current_path, MAX_PATH_LEN - 1);
+		strncat(path, target, MAX_PATH_LEN - strlen(path) - 1);
+	}
+	
+	normalize_path(path);
+
+	if (vfs_exists(path) == 0) {
+		elf_execute(path);
+	}
+	else {
+		printf("Unknown command: '%s'\n", argv[0]);
+		printf("Type 'help' for available commands\n");
+	}
+}
+
 static int cli_parse_args(char* input, char* argv[]) {
 	int argc = 0;
 	char* p = input;
@@ -211,8 +234,7 @@ void cli_run() {
 		}
 		
 		if (!found) {
-			printf("Unknown command: '%s'\n", argv[0]);
-			printf("Type 'help' for available commands\n");
+			cli_try_elf(argc, argv);
 		}
 	}
 	kfree(buffer);

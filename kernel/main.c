@@ -1,4 +1,5 @@
 #include <kernel/mm.h>
+#include <kernel/cpu.h>
 #include <kernel/gdt.h>
 #include <kernel/interrupt.h>
 #include <kernel/pic.h>
@@ -34,10 +35,6 @@ void main(void) {
 	printf("HOLY OS VERSION 0.1\n");
 	printf("\n\"IN THE BEGINNING WAS THE WORD, AND THE WORD WAS WITH GOD, AND THE WORD WAS GOD\"\n");
 	printf("- JOHN 1:1\n\n");
-
-	// WARNING: THIS FUNCTION CRASHES
-	// WHEN OS IS COMPILED WITH CLANG
-	//pci_print_list();
 
 	size_t free_mem = get_free_memory();
 	int kb = free_mem / 1024;
