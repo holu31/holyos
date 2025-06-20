@@ -14,9 +14,9 @@ int elf_load(const char* path) {
 	if (size <= 0) return -1;
 
 	void* buf = kmalloc(size);
-	elf64_ehdr* ehdr = (elf64_ehdr*)buf;
+	vfs_read((char*)path, buf, size);
 
-	vfs_read((char*)path, buf, sizeof(elf64_ehdr));
+	elf64_ehdr* ehdr = (elf64_ehdr*)buf;
 
 	if (ehdr->e_ident[0] != 0x7F || ehdr->e_ident[1] != 'E' ||
 			ehdr->e_ident[2] != 'L' || ehdr->e_ident[3] != 'F') {
@@ -31,19 +31,32 @@ int elf_load(const char* path) {
 		return -1;
 	}
 
-	for (int i = 0; i < ehdr->e_phnum; i++) {
-		elf64_phdr* phdr = (elf64_phdr*)(buf + ehdr->e_phoff + i * sizeof(elf64_phdr));
-		
-		if (phdr->p_type == 1) {
-			void* segment = (void*)phdr->p_vaddr;
-			vfs_read((char*)path, segment, phdr->p_filesz);
+	// printf("ELF: phnum=%d phoff=0x%x\n", ehdr->e_phnum, ehdr->e_phoff);
 
-			memset(segment + phdr->p_filesz, 0, phdr->p_memsz - phdr->p_filesz);
+	elf64_phdr* phdrs = (elf64_phdr*)((uint8_t*)buf + ehdr->e_phoff);
+	for (int i = 0; i < ehdr->e_phnum; ++i) {
+		if (phdrs[i].p_type != PT_LOAD) continue;
+		if (phdrs[i].p_vaddr == 0) continue;
+
+		uintptr_t vaddr = phdrs[i].p_vaddr;
+		size_t memsz = phdrs[i].p_memsz;
+		size_t filesz = phdrs[i].p_filesz;
+		uintptr_t offset = phdrs[i].p_offset;
+
+		// WARNING: IT'S WORKING, BUT YOU NEED TO ALLOCATE PAGES
+		// TODO: ALLOCATE PAGES
+		
+		memcpy((void*)vaddr, (uint8_t*)buf + offset, filesz);
+		
+		if (memsz > filesz) {
+			memset((void*)(vaddr + filesz), 0, memsz - filesz);
 		}
 	}
 
+	// printf("ELF: entry point = 0x%x\n", (uintptr_t)ehdr->e_entry);
+	uintptr_t entry = ehdr->e_entry;
 	kfree(buf);
-	return ehdr->e_entry;
+	return (int)entry;
 }
 
 void elf_execute(const char* path) {	

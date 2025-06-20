@@ -5,7 +5,7 @@
 
 #define ALIGN(size) (((size) + sizeof(size_t) - 1) & ~(sizeof(size_t) - 1))
 
-static volatile struct limine_memmap_request memmap_request = {
+volatile struct limine_memmap_request memmap_request = {
 	.id = LIMINE_MEMMAP_REQUEST,
 	.revision = 0
 };

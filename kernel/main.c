@@ -17,7 +17,7 @@
 #include <kernel/cli.h>
 
 void main(void) {
-	asm volatile("cli");
+	cpu_disable_interrupts();
 	gdt_init();
 	idt_init();
 	pic_remap();
@@ -40,7 +40,7 @@ void main(void) {
 	int kb = free_mem / 1024;
 	printf("FREE MEMORY: %d KB\n\n", kb);
 
-	asm volatile("sti");
+	cpu_enable_interrupts();
 
 	// TEST SYSCALL
 	asm volatile ("int $0x80" :
