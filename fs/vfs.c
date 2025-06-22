@@ -134,6 +134,8 @@ int vfs_isdir(const char* path) {
 }
 
 int vfs_exists(const char* path) {
+	if (!path[0] || strcmp(path, "/") == 0) return 0; 
+	
 	struct vfs_mount_info* mount = vfs_find_mount(path);
 	if (!mount) return -1;
 
