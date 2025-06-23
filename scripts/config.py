@@ -25,20 +25,6 @@ class Configurator:
         with open(CONFIG_FILE, 'w') as f:
             json.dump(self.config, f, indent=4)
 
-    def generate_makefile(self):
-        with open("common.mk", 'w') as f:
-            f.write(f"""# Generated configuration
-CC := {self.config['compiler']}
-LD := {'ld.lld' if 'clang' in self.config['compiler'] else 'ld'}
-AR := {'ld.lld' if 'llvm-ar' in self.config['compiler'] else 'ar'}
-CFLAGS := -m64 -g -{self.config['optimization']} \\
-          -nostdlib -ffreestanding -Wall -Wextra \\
-          -fno-builtin -fno-PIC -fno-stack-protector \\
-          -mcmodel=kernel
-
-{'CFLAGS += -target x86_64-pc-none-elf -march=x86-64' if self.config['compiler'] == 'clang' else ''}
-""")
-
 def draw_menu(stdscr):
     configurator = Configurator()
     configurator.load_config()
@@ -49,7 +35,7 @@ def draw_menu(stdscr):
         "Compiler",
         "Optimization",
         "Features",
-        "Generate Makefile",
+        "Save Configuration",
         "Exit"
     ]
     features_menu = [
@@ -90,9 +76,8 @@ def draw_menu(stdscr):
                 configurator.config['optimization'] = opts[(current + 1) % len(opts)]
             elif menu_items[current_row] == "Features":
                 feature_menu(stdscr, configurator)
-            elif menu_items[current_row] == "Generate Makefile":
-                subprocess.run(["make", "clean"])
-                configurator.generate_makefile()
+            elif menu_items[current_row] == "Save Configuration":
+                subprocess.run(["scons", "-c"])
                 configurator.save_config() 
                 return
             elif menu_items[current_row] == "Exit":

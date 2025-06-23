@@ -1,0 +1,7 @@
+*.o
+*.a
+*.tar
+*.json
+limine
+system
+common.mk

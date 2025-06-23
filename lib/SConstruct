@@ -1,0 +1,13 @@
+Import('env')
+import glob
+
+c_files = glob.glob("**/*.c", recursive=True)
+s_files = glob.glob("**/*.S", recursive=True)
+
+lib_sources = c_files + s_files
+
+lib_objects = env.Object(lib_sources)
+
+lib = env.Library('lib', lib_objects)
+
+Return('lib')
