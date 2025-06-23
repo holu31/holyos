@@ -3,7 +3,7 @@
 .global gdt_init
 .type gdt_init, @function
 gdt_init:
-	lgdt (gdt_ptr)
+	lgdt gdt_ptr(%rip)
 
 	mov $0x10, %ax
 	mov %ax, %ds

@@ -6,7 +6,7 @@ interrupt_common_stub:
 	.align 16
 	subq $120, %rsp
 	movq %r15, 0(%rsp)
-    	movq %r14, 8(%rsp)
+    movq %r14, 8(%rsp)
 	movq %r13, 16(%rsp)
 	movq %r12, 24(%rsp)
 	movq %rbp, 32(%rsp)

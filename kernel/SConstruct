@@ -2,7 +2,7 @@ Import('env')
 import glob
 
 c_files = glob.glob("**/*.c", recursive=True)
-s_files = glob.glob("**/*.S", recursive=True)
+s_files = glob.glob("**/*.s", recursive=True)
 
 kernel_sources = c_files + s_files
 
